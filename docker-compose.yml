@@ -1,0 +1,19 @@
+
+services:
+  mysql-product:
+    image: mysql:8.0
+    container_name: mysql-db
+    environment:
+      MYSQL_ROOT_PASSWORD: 10092003
+      MYSQL_DATABASE: ecommerce
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_product_data:/var/lib/mysql
+
+volumes:
+  mysql_product_data:
+
+
+
+

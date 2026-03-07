@@ -1,0 +1,29 @@
+server:
+    port: 8080
+spring:
+    application:
+        name: ProductService
+    datasource:
+        url: jdbc:mysql://localhost:3306/ecommerce?createDatabaseIfNotExist=true
+        username: root
+        password: 10092003
+        driver-class-name: com.mysql.cj.jdbc.Driver
+    jpa:
+      hibernate:
+        ddl-auto: update
+      show-sql: true
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+logging:
+  level:
+    org.springframework.web: DEBUG
+    org.hibernate.SQL: DEBUG
+
+jwt:
+  secret: "bXlzdXBlcnNlY3JldGtleWZvcmp3dHRva2VuMTIzNDU2Nzg5MGFiY2RlZmdoaWprbG1ub3BxcnN0"
+  expiration: 86400000
+  refresh-expiration: 604800000
