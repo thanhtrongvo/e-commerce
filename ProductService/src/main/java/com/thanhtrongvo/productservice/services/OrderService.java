@@ -6,6 +6,7 @@ import com.thanhtrongvo.productservice.dtos.responses.OrderItemResponse;
 import com.thanhtrongvo.productservice.dtos.responses.OrderResponse;
 import com.thanhtrongvo.productservice.entities.Order;
 import com.thanhtrongvo.productservice.entities.OrderItem;
+import com.thanhtrongvo.productservice.entities.OrderStatus;
 import com.thanhtrongvo.productservice.entities.Product;
 import com.thanhtrongvo.productservice.entities.User;
 import com.thanhtrongvo.productservice.exceptions.BadRequestException;
@@ -15,11 +16,11 @@ import com.thanhtrongvo.productservice.repositories.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -35,10 +36,9 @@ public class OrderService {
     public OrderResponse createOrder(OrderRequest request, User user) {
         Order order = Order.builder()
                 .orderNumber(generateOrderNumber())
-                .status("PENDING")
+                .status(OrderStatus.PENDING)
                 .shippingAddress(request.getShippingAddress())
                 .user(user)
-                .orderItems(new ArrayList<>())
                 .build();
 
         BigDecimal totalAmount = BigDecimal.ZERO;
@@ -80,10 +80,22 @@ public class OrderService {
                 .map(this::mapToResponse);
     }
 
+    /**
+     * Lấy đơn hàng theo ID.
+     * Nếu currentUser không phải ADMIN thì chỉ được xem đơn của chính mình.
+     */
     @Transactional(readOnly = true)
-    public OrderResponse getOrderById(Long id) {
+    public OrderResponse getOrderById(Long id, User currentUser) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Order", "id", id));
+
+        boolean isAdmin = currentUser.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        if (!isAdmin && !order.getUser().getId().equals(currentUser.getId())) {
+            throw new AccessDeniedException("You do not have permission to view this order");
+        }
+
         return mapToResponse(order);
     }
 
@@ -94,10 +106,18 @@ public class OrderService {
                 .collect(Collectors.toList());
     }
 
-    public OrderResponse updateOrderStatus(Long id, String status) {
+    public OrderResponse updateOrderStatus(Long id, String statusStr) {
+        OrderStatus newStatus;
+        try {
+            newStatus = OrderStatus.valueOf(statusStr.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new BadRequestException("Invalid order status: " + statusStr
+                    + ". Valid values: PENDING, CONFIRMED, PROCESSING, SHIPPED, DELIVERED, CANCELLED, REFUNDED");
+        }
+
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Order", "id", id));
-        order.setStatus(status);
+        order.setStatus(newStatus);
         Order saved = orderRepository.save(order);
         return mapToResponse(saved);
     }
@@ -136,4 +156,3 @@ public class OrderService {
         return "ORD-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     }
 }
-

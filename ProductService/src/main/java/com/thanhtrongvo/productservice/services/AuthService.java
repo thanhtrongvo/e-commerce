@@ -20,7 +20,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -74,6 +76,7 @@ public class AuthService {
                 .userId(savedUser.getId())
                 .username(savedUser.getUsername())
                 .email(savedUser.getEmail())
+                .roles(getRoleNames(savedUser))
                 .build();
     }
 
@@ -97,6 +100,7 @@ public class AuthService {
                 .userId(user.getId())
                 .username(user.getUsername())
                 .email(user.getEmail())
+                .roles(getRoleNames(user))
                 .build();
     }
 
@@ -114,7 +118,14 @@ public class AuthService {
                 .userId(user.getId())
                 .username(user.getUsername())
                 .email(user.getEmail())
+                .roles(getRoleNames(user))
                 .build();
+    }
+
+    private List<String> getRoleNames(User user) {
+        return user.getRoles().stream()
+                .map(role -> role.getName().name())
+                .collect(Collectors.toList());
     }
 }
 

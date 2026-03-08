@@ -1,5 +1,6 @@
 package com.thanhtrongvo.productservice.dtos.responses;
 
+import com.thanhtrongvo.productservice.entities.OrderStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,10 +17,9 @@ public class OrderResponse {
     private Long id;
     private String orderNumber;
     private BigDecimal totalAmount;
-    private String status;
+    private OrderStatus status;
     private String shippingAddress;
     private Long userId;
     private String username;
     private List<OrderItemResponse> items;
 }
-
