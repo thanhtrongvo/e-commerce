@@ -9,6 +9,8 @@ import RegisterPage from "@/pages/RegisterPage";
 import CartPage from "@/pages/CartPage";
 import CheckoutPage from "@/pages/CheckoutPage";
 import MyOrdersPage from "@/pages/MyOrdersPage";
+import PaymentSuccessPage from "@/pages/PaymentSuccessPage";
+import PaymentCancelPage from "@/pages/PaymentCancelPage";
 import AdminDashboard from "@/pages/AdminDashboard";
 
 function App() {
@@ -26,6 +28,8 @@ function App() {
             <Route path="/cart" element={<CartPage />} />
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/my-orders" element={<MyOrdersPage />} />
+            <Route path="/payment/success" element={<PaymentSuccessPage />} />
+            <Route path="/payment/cancel" element={<PaymentCancelPage />} />
             <Route path="/admin" element={<AdminDashboard />} />
           </Routes>
         </main>

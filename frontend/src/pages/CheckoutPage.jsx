@@ -8,11 +8,10 @@ import toast from "react-hot-toast";
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
-  const { items, total, clearCart } = useCartStore();
+  const { items, total } = useCartStore();
   const { isAuthenticated } = useAuthStore();
   const [address, setAddress] = useState("");
   const [loading, setLoading] = useState(false);
-  const [done, setDone] = useState(null);
 
   const formatPrice = (p) =>
     new Intl.NumberFormat("vi-VN", {
@@ -24,7 +23,7 @@ export default function CheckoutPage() {
     navigate("/login");
     return null;
   }
-  if (items.length === 0 && !done) {
+  if (items.length === 0) {
     navigate("/cart");
     return null;
   }
@@ -37,53 +36,30 @@ export default function CheckoutPage() {
         shippingAddress: address,
         items: items.map((i) => ({ productId: i.id, quantity: i.quantity })),
       };
-      const { data } = await api.post("/orders", payload);
-      clearCart();
-      setDone(data.data);
-      toast.success(">> ORDER PLACED!", { className: "pixel-toast" });
+      const { data } = await api.post(
+        "/payments/create-checkout-session",
+        payload,
+      );
+      const sessionUrl = data.data?.sessionUrl;
+      if (sessionUrl) {
+        // Redirect to Stripe Checkout
+        window.location.href = sessionUrl;
+      } else {
+        toast.error(">> FAILED TO CREATE PAYMENT SESSION", {
+          className: "pixel-toast",
+        });
+      }
     } catch (err) {
-      toast.error(">> " + (err.response?.data?.message || "ORDER FAILED"), {
-        className: "pixel-toast",
-      });
+      toast.error(
+        ">> " + (err.response?.data?.message || "PAYMENT SESSION FAILED"),
+        {
+          className: "pixel-toast",
+        },
+      );
     } finally {
       setLoading(false);
     }
   };
-
-  if (done) {
-    return (
-      <div className="max-w-lg mx-auto px-4 py-20 text-center animate-pixel-in">
-        <div className="pixel-card p-8 border-[var(--pixel-green)] pixel-border-green crt-overlay">
-          <div className="font-pixel text-[var(--pixel-green)] text-[30px] mb-4 animate-glow">
-            ✓
-          </div>
-          <div className="font-pixel text-[10px] text-[var(--pixel-green)] mb-2">
-            ORDER CONFIRMED!
-          </div>
-          <div className="font-vt323 text-xl text-[var(--pixel-gray)] mb-1">
-            Order #: {done.orderNumber}
-          </div>
-          <div className="font-vt323 text-xl text-[var(--pixel-white)] mb-6">
-            Total: {formatPrice(done.totalAmount)}
-          </div>
-          <div className="flex gap-3 justify-center">
-            <button
-              onClick={() => navigate("/my-orders")}
-              className="pixel-btn pixel-btn-green font-pixel text-[7px]"
-            >
-              MY ORDERS
-            </button>
-            <button
-              onClick={() => navigate("/")}
-              className="pixel-btn pixel-btn-white font-pixel text-[7px]"
-            >
-              SHOP MORE
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8 animate-pixel-in">
@@ -155,12 +131,23 @@ export default function CheckoutPage() {
               className="pixel-input resize-none"
             />
           </div>
+
+          {/* Stripe payment indicator */}
+          <div className="flex items-center gap-2 px-2 py-1 rounded border border-[var(--pixel-border)] bg-[var(--pixel-dark)]">
+            <span className="font-pixel text-[8px] text-[var(--pixel-cyan)]">
+              💳
+            </span>
+            <span className="font-vt323 text-base text-[var(--pixel-gray)]">
+              Secure payment via Stripe
+            </span>
+          </div>
+
           <button
             type="submit"
             disabled={loading}
             className="pixel-btn pixel-btn-solid-green font-pixel text-[8px] py-3 disabled:opacity-50"
           >
-            {loading ? ">> PLACING ORDER..." : ">> CONFIRM ORDER"}
+            {loading ? ">> REDIRECTING TO PAYMENT..." : ">> PAY WITH STRIPE"}
           </button>
         </form>
       </div>

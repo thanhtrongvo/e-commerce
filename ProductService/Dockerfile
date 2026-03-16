@@ -1,0 +1,1 @@
+FROM java:21-jdk-slim
