@@ -19,5 +19,7 @@ public class OrderRequest {
     @NotEmpty(message = "Order must have at least one item")
     @Valid
     private List<OrderItemRequest> items;
+    private String email; 
+    
 }
 

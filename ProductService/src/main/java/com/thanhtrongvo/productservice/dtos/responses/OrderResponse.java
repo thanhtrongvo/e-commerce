@@ -21,5 +21,6 @@ public class OrderResponse {
     private String shippingAddress;
     private Long userId;
     private String username;
+    private String paymentMethod;
     private List<OrderItemResponse> items;
 }

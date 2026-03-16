@@ -27,3 +27,9 @@ jwt:
   secret: "bXlzdXBlcnNlY3JldGtleWZvcmp3dHRva2VuMTIzNDU2Nzg5MGFiY2RlZmdoaWprbG1ub3BxcnN0"
   expiration: 86400000
   refresh-expiration: 604800000
+
+stripe:
+  secret-key: ${STRIPE_SECRET_KEY}
+  webhook-secret: ${STRIPE_WEBHOOK_SECRET}
+  success-url: "http://localhost:5173/payment/success?session_id={CHECKOUT_SESSION_ID}"
+  cancel-url: "http://localhost:5173/payment/cancel"

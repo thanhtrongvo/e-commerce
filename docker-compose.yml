@@ -10,6 +10,12 @@ services:
       - "3306:3306"
     volumes:
       - mysql_product_data:/var/lib/mysql
+  product-service:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql-product
 
 volumes:
   mysql_product_data:

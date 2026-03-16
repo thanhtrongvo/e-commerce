@@ -1,4 +1,1 @@
-FROM ubuntu:latest
-LABEL authors="thanhtrongvo"
-
-ENTRYPOINT ["top", "-b"]
+FROM java:21-jdk-slim

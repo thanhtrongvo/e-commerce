@@ -137,6 +137,7 @@ public class OrderService {
                 .shippingAddress(order.getShippingAddress())
                 .userId(order.getUser().getId())
                 .username(order.getUser().getUsername())
+                .paymentMethod(order.getPaymentMethod())
                 .items(items)
                 .build();
     }
