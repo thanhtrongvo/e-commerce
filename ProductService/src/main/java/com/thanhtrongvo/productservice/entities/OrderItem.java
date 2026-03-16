@@ -3,6 +3,7 @@ package com.thanhtrongvo.productservice.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+
 import java.math.BigDecimal;
 
 @Entity
@@ -12,19 +13,20 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class OrderItem {
+public class OrderItem extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private Order order;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
 
     private Integer quantity;
     private BigDecimal price;
 }
+

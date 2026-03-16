@@ -23,9 +23,14 @@ public class RefreshTokenService {
     @Value("${jwt.refresh-expiration:604800000}")
     private long refreshTokenDurationMs;
 
+    @Transactional
     public RefreshToken createRefreshToken(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Delete existing refresh token to avoid unique constraint violation
+        refreshTokenRepository.deleteByUser(user);
+        refreshTokenRepository.flush();
 
         RefreshToken refreshToken = RefreshToken.builder()
                 .user(user)
