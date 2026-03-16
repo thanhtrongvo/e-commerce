@@ -52,8 +52,10 @@ public class OrderController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Get order by ID")
-    public ResponseEntity<ApiResponse<OrderResponse>> getOrderById(@PathVariable Long id) {
-        OrderResponse order = orderService.getOrderById(id);
+    public ResponseEntity<ApiResponse<OrderResponse>> getOrderById(
+            @PathVariable Long id,
+            @AuthenticationPrincipal User currentUser) {
+        OrderResponse order = orderService.getOrderById(id, currentUser);
         return ResponseEntity.ok(ApiResponse.success(order));
     }
 

@@ -24,7 +24,8 @@ public class Order {
     private String orderNumber;
 
     private BigDecimal totalAmount;
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
     private String shippingAddress;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -32,6 +33,7 @@ public class Order {
     private User user;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Builder.Default
     private List<OrderItem> orderItems = new ArrayList<>();
 
 
