@@ -44,6 +44,7 @@ public class Product extends BaseEntity {
     private Category category;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Builder.Default
     private List<ProductImages> images = new ArrayList<>();
 
     @Column(nullable = false, columnDefinition = "TINYINT(1) DEFAULT 0")
